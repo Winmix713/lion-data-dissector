@@ -32,7 +32,7 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
         {/* Home Team Select */}
         <div className="mb-3">
           <Select 
-            value={match.home?.id || ""} 
+            value={match.home?.id.toString() || ""} 
             onValueChange={(value) => onTeamSelect(index, 'home', value)}
           >
             <SelectTrigger className="w-full bg-black/60 border-white/10 text-white">
@@ -40,9 +40,9 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
             </SelectTrigger>
             <SelectContent className="bg-gray-900 text-white border-white/10 max-h-[300px]">
               {availableTeams
-                .filter(team => team.id !== match.away?.id)
+                .filter(team => !match.away || team.id.toString() !== match.away.id.toString())
                 .map(team => (
-                  <SelectItem key={team.id} value={team.id}>
+                  <SelectItem key={team.id} value={team.id.toString()}>
                     <div className="flex items-center gap-2">
                       {team.logoUrl && (
                         <img 
@@ -62,7 +62,7 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
         {/* Away Team Select */}
         <div className="mb-3">
           <Select 
-            value={match.away?.id || ""} 
+            value={match.away?.id.toString() || ""} 
             onValueChange={(value) => onTeamSelect(index, 'away', value)}
           >
             <SelectTrigger className="w-full bg-black/60 border-white/10 text-white">
@@ -70,9 +70,9 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
             </SelectTrigger>
             <SelectContent className="bg-gray-900 text-white border-white/10 max-h-[300px]">
               {availableTeams
-                .filter(team => team.id !== match.home?.id)
+                .filter(team => !match.home || team.id.toString() !== match.home.id.toString())
                 .map(team => (
-                  <SelectItem key={team.id} value={team.id}>
+                  <SelectItem key={team.id} value={team.id.toString()}>
                     <div className="flex items-center gap-2">
                       {team.logoUrl && (
                         <img 

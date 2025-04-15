@@ -1,3 +1,4 @@
+
 import React from 'react';
 import MatchCard from './match/MatchCard';
 import { Calendar, TrendingUp, AlertCircle } from 'lucide-react';
@@ -24,8 +25,8 @@ const generateMockMatches = () => {
   mockMatches.push({
     id: 2,
     time: '16:30',
-    homeTeam: teams[2], // Debrecen
-    awayTeam: teams[1], // Puskás Akadémia
+    homeTeam: normalizeTeam(teams[2]), // Debrecen
+    awayTeam: normalizeTeam(teams[1]), // Puskás Akadémia
     isSelectable: true,
     league: hungarianLeague,
     headToHead: generateHeadToHead(teams[2].id, teams[1].id)
