@@ -1,6 +1,6 @@
 
 import React from 'react';
-import MatchCard from './MatchCard';
+import MatchCard from './match/MatchCard';
 import { Calendar, TrendingUp, AlertCircle } from 'lucide-react';
 import { teams, hungarianLeague } from '../data/teams';
 import { generateHeadToHead } from '../data/teams';
