@@ -1,4 +1,6 @@
 
+import { UnifiedTeam } from './unified-team';
+
 export interface Team {
   id: number;
   name: string;
@@ -37,8 +39,8 @@ export type PredictionType = 'home' | 'draw' | 'away' | null;
 export interface MatchProps {
   id: number;
   time: string;
-  homeTeam: Team | null;
-  awayTeam: Team | null;
+  homeTeam: UnifiedTeam | null;
+  awayTeam: UnifiedTeam | null;
   isSelectable?: boolean;
   league?: League;
   headToHead?: HeadToHead[];

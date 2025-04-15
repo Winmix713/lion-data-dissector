@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Team } from '../../../data/premier-league-teams';
+import { UnifiedTeam } from '../../../types/unified-team';
 
 interface TeamsDisplayProps {
-  homeTeam: Team;
-  awayTeam: Team;
+  homeTeam: UnifiedTeam;
+  awayTeam: UnifiedTeam;
 }
 
 const TeamsDisplay: React.FC<TeamsDisplayProps> = ({ homeTeam, awayTeam }) => {
@@ -13,7 +13,7 @@ const TeamsDisplay: React.FC<TeamsDisplayProps> = ({ homeTeam, awayTeam }) => {
       <div className="flex flex-col items-center">
         <div className="w-18 h-18 rounded-full bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl border border-white/5 mb-3 p-4 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
           <img 
-            src={homeTeam.logoUrl} 
+            src={homeTeam.logoUrl || homeTeam.logo} 
             alt={homeTeam.name} 
             className="w-12 h-12 object-contain"
           />
@@ -30,7 +30,7 @@ const TeamsDisplay: React.FC<TeamsDisplayProps> = ({ homeTeam, awayTeam }) => {
       <div className="flex flex-col items-center">
         <div className="w-18 h-18 rounded-full bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-xl border border-white/5 mb-3 p-4 flex items-center justify-center shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)]">
           <img 
-            src={awayTeam.logoUrl} 
+            src={awayTeam.logoUrl || awayTeam.logo} 
             alt={awayTeam.name} 
             className="w-12 h-12 object-contain"
           />

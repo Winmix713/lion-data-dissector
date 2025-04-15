@@ -9,7 +9,7 @@ import { UnifiedTeam, normalizeTeam } from '../../types/unified-team';
 type MatchCardProps = {
   index: number;
   match: { home: UnifiedTeam | null; away: UnifiedTeam | null };
-  availableTeams: PremierLeagueTeam[];
+  availableTeams: UnifiedTeam[];
   onTeamSelect: (matchIndex: number, side: 'home' | 'away', teamId: string) => void;
 } | {
   id: number;
@@ -94,7 +94,7 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
           <div className="flex items-center justify-center gap-4 mt-4 mb-2">
             <div className="flex flex-col items-center">
               <img 
-                src={match.home.logoUrl} 
+                src={match.home.logoUrl || match.home.logo} 
                 alt={`${match.home.name} logo`} 
                 className="w-12 h-12 object-contain"
               />
@@ -103,7 +103,7 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
             <span className="text-gray-400 font-bold">VS</span>
             <div className="flex flex-col items-center">
               <img 
-                src={match.away.logoUrl} 
+                src={match.away.logoUrl || match.away.logo} 
                 alt={`${match.away.name} logo`} 
                 className="w-12 h-12 object-contain"
               />

@@ -2,9 +2,10 @@
 import React from 'react';
 import MatchCard from '../match/MatchCard';
 import { Team } from '../../data/premier-league-teams';
+import { UnifiedTeam, normalizeTeam } from '../../types/unified-team';
 
 interface MatchCardGridProps {
-  selectedTeams: { home: Team | null; away: Team | null }[];
+  selectedTeams: { home: UnifiedTeam | null; away: UnifiedTeam | null }[];
   availableTeams: Team[];
   onTeamSelect: (matchIndex: number, side: 'home' | 'away', teamId: string) => void;
 }
@@ -20,7 +21,7 @@ const MatchCardGrid: React.FC<MatchCardGridProps> = ({ selectedTeams, availableT
           availableTeams={[
             ...(match.home ? [match.home] : []),
             ...(match.away ? [match.away] : []),
-            ...availableTeams
+            ...availableTeams.map(team => normalizeTeam(team))
           ]}
           onTeamSelect={onTeamSelect}
         />

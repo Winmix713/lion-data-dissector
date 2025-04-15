@@ -3,14 +3,18 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { toast } from 'sonner';
-import { PREMIER_LEAGUE_TEAMS, Team } from '../data/premier-league-teams';
+import { PREMIER_LEAGUE_TEAMS } from '../data/premier-league-teams';
 import MatchCard from './match/MatchCard';
 import PredictionResultCard from './match/PredictionResultCard';
+import { UnifiedTeam, normalizeTeam } from '../types/unified-team';
 
 const MatchSelectionSection = () => {
   // State for selected teams in each match card (now 8 matches)
   const [selectedTeams, setSelectedTeams] = useState([
-    { home: PREMIER_LEAGUE_TEAMS.find(t => t.id === "arsenal"), away: PREMIER_LEAGUE_TEAMS.find(t => t.id === "chelsea") },
+    { 
+      home: PREMIER_LEAGUE_TEAMS.find(t => t.id === "arsenal") ? normalizeTeam(PREMIER_LEAGUE_TEAMS.find(t => t.id === "arsenal")!) : null, 
+      away: PREMIER_LEAGUE_TEAMS.find(t => t.id === "chelsea") ? normalizeTeam(PREMIER_LEAGUE_TEAMS.find(t => t.id === "chelsea")!) : null
+    },
     { home: null, away: null },
     { home: null, away: null },
     { home: null, away: null },
@@ -27,8 +31,8 @@ const MatchSelectionSection = () => {
   const selectedTeamIds = useMemo(() => {
     const ids: string[] = [];
     selectedTeams.forEach(match => {
-      if (match.home) ids.push(match.home.id);
-      if (match.away) ids.push(match.away.id);
+      if (match.home) ids.push(match.home.id.toString());
+      if (match.away) ids.push(match.away.id.toString());
     });
     return ids;
   }, [selectedTeams]);
@@ -69,14 +73,14 @@ const MatchSelectionSection = () => {
       // If this team was previously selected somewhere else, remove it
       updated.forEach((match, idx) => {
         if (idx !== matchIndex) {
-          if (match.home?.id === teamId) updated[idx].home = null;
-          if (match.away?.id === teamId) updated[idx].away = null;
+          if (match.home?.id.toString() === teamId) updated[idx].home = null;
+          if (match.away?.id.toString() === teamId) updated[idx].away = null;
         }
       });
       
       updated[matchIndex] = {
         ...updated[matchIndex],
-        [side]: team
+        [side]: team ? normalizeTeam(team) : null
       };
       return updated;
     });
