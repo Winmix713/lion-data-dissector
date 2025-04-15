@@ -1,10 +1,10 @@
-
 import React from 'react';
 import MatchCard from './match/MatchCard';
 import { Calendar, TrendingUp, AlertCircle } from 'lucide-react';
 import { teams, hungarianLeague } from '../data/teams';
 import { generateHeadToHead } from '../data/teams';
 import { MatchProps } from '../types/match';
+import { normalizeTeam } from '../types/unified-team';
 
 // Generate mock matches
 const generateMockMatches = () => {
@@ -14,8 +14,8 @@ const generateMockMatches = () => {
   mockMatches.push({
     id: 1,
     time: '19:00',
-    homeTeam: teams[0], // Ferencváros
-    awayTeam: teams[3], // Újpest
+    homeTeam: normalizeTeam(teams[0]), // Ferencváros
+    awayTeam: normalizeTeam(teams[3]), // Újpest
     isSelectable: true,
     league: hungarianLeague,
     headToHead: generateHeadToHead(teams[0].id, teams[3].id)

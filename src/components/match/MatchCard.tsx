@@ -1,20 +1,21 @@
 
 import React from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Team } from '../../data/premier-league-teams';
+import { Team as PremierLeagueTeam } from '../../data/premier-league-teams';
 import { League, HeadToHead } from '../../types/match';
+import { UnifiedTeam, normalizeTeam } from '../../types/unified-team';
 
 // Support for both prop types: new and legacy
 type MatchCardProps = {
   index: number;
-  match: { home: Team | null; away: Team | null };
-  availableTeams: Team[];
+  match: { home: UnifiedTeam | null; away: UnifiedTeam | null };
+  availableTeams: PremierLeagueTeam[];
   onTeamSelect: (matchIndex: number, side: 'home' | 'away', teamId: string) => void;
 } | {
   id: number;
   time: string;
-  homeTeam: Team | null;
-  awayTeam: Team | null;
+  homeTeam: UnifiedTeam | null;
+  awayTeam: UnifiedTeam | null;
   isSelectable?: boolean;
   league?: League;
   headToHead?: HeadToHead[];
@@ -135,9 +136,11 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
         {homeTeam && awayTeam ? (
           <div className="flex items-center justify-between my-6">
             <div className="flex flex-col items-center flex-1 text-center">
-              <img src={homeTeam.logo} alt={homeTeam.name} className="w-16 h-16 object-contain mb-2" />
+              <img src={homeTeam.logo || homeTeam.logoUrl} alt={homeTeam.name} className="w-16 h-16 object-contain mb-2" />
               <span className="text-white font-semibold">{homeTeam.name}</span>
-              <span className="text-gray-400 text-xs mt-1">#{homeTeam.position}</span>
+              {homeTeam.position && (
+                <span className="text-gray-400 text-xs mt-1">#{homeTeam.position}</span>
+              )}
             </div>
             
             <div className="flex flex-col items-center px-4">
@@ -146,9 +149,11 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
             </div>
             
             <div className="flex flex-col items-center flex-1 text-center">
-              <img src={awayTeam.logo} alt={awayTeam.name} className="w-16 h-16 object-contain mb-2" />
+              <img src={awayTeam.logo || awayTeam.logoUrl} alt={awayTeam.name} className="w-16 h-16 object-contain mb-2" />
               <span className="text-white font-semibold">{awayTeam.name}</span>
-              <span className="text-gray-400 text-xs mt-1">#{awayTeam.position}</span>
+              {awayTeam.position && (
+                <span className="text-gray-400 text-xs mt-1">#{awayTeam.position}</span>
+              )}
             </div>
           </div>
         ) : (
@@ -158,11 +163,11 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
         )}
         
         {/* Form Indicators */}
-        {homeTeam && awayTeam && (
+        {homeTeam?.form && awayTeam?.form && (
           <div className="flex justify-between mt-4 pt-4 border-t border-gray-800">
             <div className="flex items-center gap-1">
               <span className="text-xs text-gray-400 mr-1">Forma:</span>
-              {homeTeam.form?.split('').map((result, idx) => (
+              {homeTeam.form.split('').map((result, idx) => (
                 <span key={idx} className={`w-4 h-4 flex items-center justify-center text-[10px] rounded-full font-bold 
                   ${result === 'G' ? 'bg-green-500 text-white' : 
                     result === 'D' ? 'bg-yellow-500 text-black' : 
@@ -173,7 +178,7 @@ const MatchCard: React.FC<MatchCardProps> = (props) => {
             </div>
             
             <div className="flex items-center gap-1">
-              {awayTeam.form?.split('').map((result, idx) => (
+              {awayTeam.form.split('').map((result, idx) => (
                 <span key={idx} className={`w-4 h-4 flex items-center justify-center text-[10px] rounded-full font-bold 
                   ${result === 'G' ? 'bg-green-500 text-white' : 
                     result === 'D' ? 'bg-yellow-500 text-black' : 
