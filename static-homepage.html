@@ -1,0 +1,2700 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WinMix Tipster</title>
+  <meta name="description" content="Sportfogadási tippek és előrejelzések" />
+  
+  <style>
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+    :root {
+      --background: 220 33% 8%;
+      --foreground: 210 40% 98%;
+      --card: 222 47% 5%;
+      --card-foreground: 210 40% 98%;
+      --popover: 222 47% 5%;
+      --popover-foreground: 210 40% 98%;
+      --primary: 220 100% 65%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 215 25% 20%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217 33% 18%;
+      --muted-foreground: 215 20% 65%;
+      --accent: 216 34% 18%;
+      --accent-foreground: 210 40% 98%;
+      --destructive: 0 84% 60%;
+      --destructive-foreground: 210 40% 98%;
+      --border: 217 33% 18%;
+      --input: 217 33% 18%;
+      --ring: 224 76% 48%;
+      --radius: 0.5rem;
+      --sidebar-background: 240 6% 10%;
+      --sidebar-foreground: 240 5% 96%;
+      --sidebar-primary: 224 76% 48%;
+      --sidebar-primary-foreground: 0 0% 100%;
+      --sidebar-accent: 240 4% 16%;
+      --sidebar-accent-foreground: 240 5% 96%;
+      --sidebar-border: 240 4% 16%;
+      --sidebar-ring: 217 92% 60%;
+    }
+
+    /* Base styles */
+    * {
+      border-color: hsla(var(--border), 0.1);
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+      font-feature-settings: "rlig" 1, "calt" 1;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background-color: transparent;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background-color: hsla(var(--muted), 0.5);
+      border-radius: 9999px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: hsla(var(--muted), 0.7);
+    }
+
+    /* Utility classes */
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    .glass-effect {
+      background-color: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .hover-glow {
+      transition: all 0.3s;
+    }
+    
+    .hover-glow:hover {
+      box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.25);
+    }
+    
+    .text-gradient {
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(to right, var(--gradient-from), var(--gradient-to));
+    }
+
+    /* Animations */
+    @keyframes float {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+      100% { transform: translateY(0px); }
+    }
+
+    @keyframes pulse-subtle {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slide-in-bottom {
+      from { 
+        opacity: 0; 
+        transform: translateY(10px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slide-in-right {
+      from { 
+        opacity: 0; 
+        transform: translateX(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes shine {
+      100% {
+        transform: translateX(100%) skewX(-12deg);
+      }
+    }
+
+    .animate-float {
+      animation: float 5s ease-in-out infinite;
+    }
+
+    .animate-pulse-subtle {
+      animation: pulse-subtle 3s ease-in-out infinite;
+    }
+
+    .animate-fade-in {
+      animation: fade-in 0.5s ease-out forwards;
+    }
+
+    .animate-slide-in-bottom {
+      animation: slide-in-bottom 0.5s ease-out forwards;
+    }
+
+    .animate-slide-in-right {
+      animation: slide-in-right 0.5s ease-out forwards;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      transition: all 0.5s;
+      padding: 1.25rem 0;
+    }
+
+    .header.scrolled {
+      backdrop-filter: blur(16px);
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 0.75rem 0;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.9), rgba(59, 130, 246, 0.9));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 10px rgba(59, 130, 246, 0.3);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      transition: all 0.3s;
+    }
+
+    .logo:hover .logo-icon {
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .logo-icon svg {
+      color: white;
+      height: 1.25rem;
+      width: 1.25rem;
+      transition: transform 0.3s;
+    }
+
+    .logo:hover .logo-icon svg {
+      transform: scale(1.1);
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logo-main {
+      font-weight: 700;
+      font-size: 1.125rem;
+      line-height: 1.25;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(to right, rgb(147, 197, 253), rgb(219, 234, 254));
+    }
+
+    .logo-sub {
+      font-size: 0.625rem;
+      margin-top: -0.25rem;
+      color: rgba(96, 165, 250, 0.8);
+      letter-spacing: 0.1em;
+    }
+
+    /* Navigation */
+    .nav {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-radius: 9999px;
+      padding: 0.5rem 1rem;
+      transition: all 0.3s;
+      text-decoration: none;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: rgb(209, 213, 219);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link:hover {
+      color: white;
+      background-color: rgba(0, 0, 0, 0.8);
+    }
+
+    .nav-link.active {
+      background-color: rgb(37, 99, 235);
+      color: white;
+      border: none;
+    }
+
+    .nav-link-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .nav-link-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    /* Auth buttons */
+    .auth-buttons {
+      display: none;
+    }
+
+    @media (min-width: 768px) {
+      .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+    }
+
+    .login-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgb(209, 213, 219);
+      text-decoration: none;
+      transition: all 0.2s;
+      border-bottom: 1px solid transparent;
+    }
+
+    .login-link:hover {
+      color: white;
+      border-bottom-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .signup-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      position: relative;
+      overflow: hidden;
+      background-color: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .signup-link:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.25);
+    }
+
+    .signup-link-text {
+      position: relative;
+      z-index: 10;
+    }
+
+    .signup-link-icon {
+      position: relative;
+      z-index: 10;
+      width: 0.875rem;
+      height: 0.875rem;
+      transition: transform 0.3s;
+    }
+
+    .signup-link:hover .signup-link-icon {
+      transform: translateX(0.25rem);
+    }
+
+    .signup-link-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .signup-link:hover .signup-link-bg {
+      opacity: 1;
+    }
+
+    /* Mobile menu */
+    .mobile-menu-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      color: rgb(229, 231, 235);
+      background-color: rgba(17, 24, 39, 0.5);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.75rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    @media (min-width: 768px) {
+      .mobile-menu-toggle {
+        display: none;
+      }
+    }
+
+    .mobile-menu {
+      position: fixed;
+      inset: 0;
+      top: 72px;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(16px);
+      z-index: 40;
+      animation: fade-in 0.3s ease-out;
+      display: none;
+    }
+
+    .mobile-menu.open {
+      display: block;
+    }
+
+    .mobile-menu-content {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .mobile-nav {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .mobile-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.875rem 1rem;
+      border-radius: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: rgb(209, 213, 219);
+    }
+
+    .mobile-nav-link:hover {
+      color: white;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .mobile-nav-link.active {
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.2));
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: white;
+    }
+
+    .mobile-nav-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .mobile-auth {
+      margin-top: auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(75, 85, 99, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .mobile-login {
+      flex: 1;
+      padding: 0.75rem;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgb(209, 213, 219);
+      text-decoration: none;
+      transition: color 0.2s;
+      border: 1px solid rgba(75, 85, 99, 0.3);
+      border-radius: 0.75rem;
+      background-color: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(4px);
+    }
+
+    .mobile-login:hover {
+      color: white;
+    }
+
+    .mobile-signup {
+      flex: 1;
+      padding: 0.75rem;
+      text-align: center;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.8), rgba(37, 99, 235, 0.8));
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-size: 0.875rem;
+      font-weight: 500;
+      border-radius: 0.75rem;
+      text-decoration: none;
+    }
+
+    .mobile-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+
+    .mobile-footer-text {
+      font-size: 0.75rem;
+      color: rgb(107, 114, 128);
+    }
+
+    /* Hero section */
+    .hero {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      padding-top: 7rem;
+      padding-bottom: 4rem;
+      overflow: hidden;
+    }
+
+    .hero-background {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.9), rgba(17, 24, 39, 0.2), rgba(0, 0, 0, 0.95));
+    }
+
+    .hero-radial {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 40%, rgba(59, 130, 246, 0.15), transparent 45%);
+    }
+
+    .hero-dots {
+      position: absolute;
+      inset: 0;
+      opacity: 0.3;
+      background-image: radial-gradient(#3b82f6 1px, transparent 0);
+      background-size: 30px 30px;
+      background-position: 0 0;
+    }
+
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 9999px;
+      background-color: rgba(96, 165, 250, 0.4);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .hero-orb-1 {
+      position: absolute;
+      top: 25%;
+      left: 25%;
+      width: 300px;
+      height: 300px;
+      border-radius: 9999px;
+      background-color: rgba(59, 130, 246, 0.05);
+      filter: blur(48px);
+      animation: pulse-subtle 4s ease-in-out infinite;
+    }
+
+    .hero-orb-2 {
+      position: absolute;
+      bottom: 25%;
+      right: 33%;
+      width: 250px;
+      height: 250px;
+      border-radius: 9999px;
+      background-color: rgba(99, 102, 241, 0.05);
+      filter: blur(48px);
+      animation: pulse-subtle 4s ease-in-out infinite;
+      animation-delay: 1s;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 4rem;
+      align-items: center;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 9999px;
+      backdrop-filter: blur(4px);
+      animation: fade-in 0.5s ease-out;
+    }
+
+    .badge-dot {
+      position: relative;
+      display: flex;
+      height: 0.5rem;
+      width: 0.5rem;
+    }
+
+    .badge-dot-ping {
+      position: absolute;
+      display: inline-flex;
+      height: 100%;
+      width: 100%;
+      border-radius: 9999px;
+      background-color: rgb(96, 165, 250);
+      opacity: 0.75;
+      animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    @keyframes ping {
+      75%, 100% {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    .badge-dot-core {
+      position: relative;
+      display: inline-flex;
+      border-radius: 9999px;
+      height: 0.625rem;
+      width: 0.625rem;
+      background-color: rgb(59, 130, 246);
+    }
+
+    .badge-text {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgb(147, 197, 253);
+    }
+
+    .hero-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.025em;
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.1s;
+      opacity: 0;
+    }
+
+    @media (min-width: 768px) {
+      .hero-title {
+        font-size: 3rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hero-title {
+        font-size: 3.75rem;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .hero-title {
+        font-size: 4.5rem;
+      }
+    }
+
+    .hero-title-line {
+      display: block;
+      margin-bottom: 0.5rem;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-title-line-1 {
+      background-image: linear-gradient(to right, white, rgb(229, 231, 235), rgb(209, 213, 219));
+    }
+
+    .hero-title-line-2 {
+      background-image: linear-gradient(to right, rgb(147, 197, 253), rgb(96, 165, 250), rgb(59, 130, 246));
+    }
+
+    .hero-description {
+      font-size: 1.25rem;
+      color: rgb(209, 213, 219);
+      max-width: 36rem;
+      margin-top: 2rem;
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.5s;
+      opacity: 0;
+    }
+
+    @media (min-width: 640px) {
+      .hero-cta {
+        flex-direction: row;
+      }
+    }
+
+    .cta-primary {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(to right, rgb(59, 130, 246), rgb(37, 99, 235));
+      color: white;
+      font-weight: 500;
+      padding: 0.875rem 1.75rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      transition: all 0.3s;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .cta-primary:hover {
+      background: linear-gradient(to right, rgb(37, 99, 235), rgb(29, 78, 216));
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.5);
+    }
+
+    .cta-primary-text {
+      position: relative;
+      z-index: 10;
+    }
+
+    .cta-primary-icon {
+      position: relative;
+      z-index: 10;
+      width: 1.25rem;
+      height: 1.25rem;
+      transition: transform 0.3s;
+    }
+
+    .cta-primary:hover .cta-primary-icon {
+      transform: translateX(0.25rem);
+    }
+
+    .cta-primary-shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      height: 100%;
+      width: 50%;
+      z-index: 5;
+      display: block;
+      transform: skewX(-12deg);
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+      opacity: 0.2;
+    }
+
+    .cta-primary:hover .cta-primary-shine {
+      animation: shine 0.8s forwards;
+    }
+
+    .cta-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background-color: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(4px);
+      color: white;
+      font-weight: 500;
+      padding: 0.875rem 1.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .cta-secondary:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .cta-secondary-icon {
+      width: 1rem;
+      height: 1rem;
+      transition: transform 0.3s;
+    }
+
+    .cta-secondary:hover .cta-secondary-icon {
+      transform: translate(0.125rem, -0.125rem);
+    }
+
+    /* Stats */
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 2rem;
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.7s;
+      opacity: 0;
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.6), rgba(17, 24, 39, 0.4));
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(59, 130, 246, 0.2);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-icon-container {
+      height: 2rem;
+      width: 2rem;
+      border-radius: 0.5rem;
+      background-color: rgba(59, 130, 246, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s;
+    }
+
+    .stat-card:hover .stat-icon-container {
+      background-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .stat-icon {
+      width: 1rem;
+      height: 1rem;
+      color: rgb(96, 165, 250);
+    }
+
+    .stat-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgb(96, 165, 250);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: rgb(107, 114, 128);
+    }
+
+    /* Hero card */
+    .hero-card-container {
+      position: relative;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 1024px) {
+      .hero-card-container {
+        margin: 0 0 0 auto;
+        animation: slide-in-right 0.5s ease-out forwards;
+        animation-delay: 0.5s;
+        opacity: 0;
+      }
+    }
+
+    .hero-card {
+      position: relative;
+      height: 500px;
+      width: 500px;
+      max-width: 100%;
+    }
+
+    .hero-card-backdrop {
+      position: absolute;
+      inset: 0;
+      border-radius: 9999px;
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.15));
+      filter: blur(48px);
+      animation: pulse-subtle 5s ease-in-out infinite;
+    }
+
+    .hero-card-ring-1 {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 400px;
+      height: 400px;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      animation: float 15s ease-in-out infinite;
+    }
+
+    .hero-card-ring-2 {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border-radius: 9999px;
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      animation: float 20s ease-in-out infinite;
+      animation-delay: 0.5s;
+    }
+
+    .hero-card-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .match-card {
+      width: 380px;
+      height: 420px;
+      border-radius: 2rem;
+      overflow: hidden;
+      backdrop-filter: blur(16px);
+      background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.7), rgba(17, 24, 39, 0.8));
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+      transform: rotate(3deg);
+      transition: all 0.5s;
+    }
+
+    .match-card:hover {
+      transform: rotate(0);
+      scale: 1.05;
+      box-shadow: 0 30px 80px rgba(59, 130, 246, 0.2);
+    }
+
+    .match-card-inner {
+      height: 100%;
+      width: 100%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .match-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .match-live-badge {
+      background-color: rgba(59, 130, 246, 0.2);
+      backdrop-filter: blur(16px);
+      border-radius: 9999px;
+      padding: 0.375rem 0.75rem;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .match-live-text {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgb(147, 197, 253);
+    }
+
+    .match-time {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: rgb(96, 165, 250);
+      background-color: rgba(59, 130, 246, 0.1);
+      padding: 0.375rem 0.75rem;
+      border-radius: 9999px;
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(59, 130, 246, 0.1);
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+
+    .match-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .team-logo-container {
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 9999px;
+      background: linear-gradient(to bottom right, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.8));
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      margin-bottom: 0.75rem;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .team-logo {
+      width: 3rem;
+      height: 3rem;
+      object-fit: contain;
+    }
+
+    .team-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: white;
+    }
+
+    .team-location {
+      font-size: 0.75rem;
+      color: rgb(96, 165, 250);
+      margin-top: 0.25rem;
+    }
+
+    .match-vs {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 1rem;
+    }
+
+    .vs-text {
+      font-size: 1.125rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: rgb(107, 114, 128);
+    }
+
+    .vs-live {
+      font-size: 0.75rem;
+      color: rgb(96, 165, 250);
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      background-color: rgba(59, 130, 246, 0.1);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      animation: pulse-subtle 2s ease-in-out infinite;
+    }
+
+    .match-stats {
+      margin-top: auto;
+    }
+
+    .stats-header {
+      font-size: 0.75rem;
+      color: rgb(107, 114, 128);
+      margin-bottom: 0.5rem;
+    }
+
+    .stats-bar {
+      display: flex;
+      gap: 0.25rem;
+      align-items: center;
+    }
+
+    .stats-bar-track {
+      flex: 1;
+      height: 0.375rem;
+      background-color: rgb(31, 41, 55);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .stats-bar-fill {
+      height: 100%;
+      background-color: rgb(59, 130, 246);
+      border-radius: 9999px;
+    }
+
+    .stats-bar-value {
+      font-size: 0.75rem;
+      color: rgb(96, 165, 250);
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .stats-bar-fill-draw {
+      height: 100%;
+      background-color: rgb(107, 114, 128);
+      border-radius: 9999px;
+    }
+
+    .match-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .match-button {
+      background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      font-size: 0.75rem;
+      color: white;
+      border-radius: 0.5rem;
+      padding: 0.625rem;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.2s;
+    }
+
+    .match-button:hover {
+      border-color: rgba(59, 130, 246, 0.2);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .hero-decorative-1 {
+      position: absolute;
+      top: 20%;
+      right: 5%;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.3), rgba(37, 99, 235, 0.3));
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .hero-decorative-1 svg {
+      color: white;
+      height: 1.25rem;
+      width: 1.25rem;
+    }
+
+    .hero-decorative-2 {
+      position: absolute;
+      bottom: 15%;
+      left: 10%;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 0.5rem;
+      background: linear-gradient(to bottom right, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+      animation: float 5s ease-in-out infinite;
+      animation-delay: 1s;
+    }
+
+    .hero-decorative-2 svg {
+      color: white;
+      height: 1rem;
+      width: 1rem;
+    }
+
+    /* Value proposition section */
+    .value-prop {
+      padding: 6rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .value-prop-bg-pattern {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(59, 130, 246, 0.08) 1.5px, transparent 1.5px);
+      background-size: 20px 20px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 60%, transparent 100%);
+    }
+
+    .value-prop-bg-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(17, 24, 39, 0.05), rgba(0, 0, 0, 0.8));
+    }
+
+    .value-prop-orb-1 {
+      position: absolute;
+      left: 0;
+      top: 25%;
+      width: 500px;
+      height: 500px;
+      border-radius: 9999px;
+      background-color: rgba(59, 130, 246, 0.05);
+      filter: blur(48px);
+      animation: pulse-subtle 4s ease-in-out infinite;
+    }
+
+    .value-prop-orb-2 {
+      position: absolute;
+      right: 0;
+      bottom: 25%;
+      width: 400px;
+      height: 400px;
+      border-radius: 9999px;
+      background-color: rgba(139, 92, 246, 0.05);
+      filter: blur(48px);
+      animation: pulse-subtle 4s ease-in-out infinite;
+      animation-delay: 1s;
+    }
+
+    .value-prop-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .value-prop-header {
+      text-align: center;
+      max-width: 42rem;
+      margin: 0 auto 4rem auto;
+      animation: fade-in 0.5s ease-out;
+    }
+
+    .value-prop-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(to right, white, rgb(243, 244, 246), rgb(209, 213, 219));
+    }
+
+    @media (min-width: 768px) {
+      .value-prop-title {
+        font-size: 2.25rem;
+      }
+    }
+
+    .value-prop-description {
+      color: rgb(209, 213, 219);
+      font-size: 1.125rem;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .features-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .feature-card {
+      position: relative;
+      background: linear-gradient(to bottom right, rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.9));
+      backdrop-filter: blur(16px);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.5s;
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 20px 50px rgba(59, 130, 246, 0.15);
+    }
+
+    .feature-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 1rem;
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.05), transparent);
+      opacity: 0;
+      transition: opacity 0.5s;
+      filter: blur(16px);
+    }
+
+    .feature-card:hover .feature-glow {
+      opacity: 1;
+    }
+
+    .feature-icon-container {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.05));
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      transition: all 0.3s;
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+    }
+
+    .feature-card:hover .feature-icon-container {
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.2), rgba(37, 99, 235, 0.1));
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .feature-icon {
+      width: 2rem;
+      height: 2rem;
+      color: rgb(59, 130, 246);
+    }
+
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: white;
+      transition: color 0.3s;
+    }
+
+    .feature-card:hover .feature-title {
+      color: rgb(219, 234, 254);
+    }
+
+    .feature-description {
+      color: rgb(107, 114, 128);
+      transition: color 0.3s;
+    }
+
+    .feature-card:hover .feature-description {
+      color: rgb(156, 163, 175);
+    }
+
+    .feature-indicator {
+      position: absolute;
+      bottom: 1.75rem;
+      right: 1.75rem;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 9999px;
+      background-color: rgba(59, 130, 246, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(0.5rem);
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover .feature-indicator {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .feature-indicator-icon {
+      width: 1rem;
+      height: 1rem;
+      color: rgb(96, 165, 250);
+    }
+
+    /* Upcoming matches section */
+    .upcoming-matches {
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upcoming-matches-bg {
+      position: absolute;
+      inset: 0;
+    }
+
+    .upcoming-matches-gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.5));
+    }
+
+    .upcoming-matches-radial {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08), transparent 60%);
+    }
+
+    .upcoming-matches-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    .upcoming-matches-header {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 2.5rem;
+    }
+
+    @media (min-width:.upcoming-matches-header68px) {
+      .upcoming-matches-header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .upcoming-matches-title-container {
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.1s;
+      opacity: 0;
+    }
+
+    .upcoming-matches-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+    }
+
+    .upcoming-matches-badge-icon {
+      width: 1.25rem;
+      height: 1.25rem;
+      color: rgb(96, 165, 250);
+    }
+
+    .upcoming-matches-badge-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(to right, white, rgb(229, 231, 235));
+    }
+
+    .upcoming-matches-subtitle {
+      color: rgb(107, 114, 128);
+      padding-left: 0.5rem;
+    }
+
+    .trending-badge {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+      backdrop-filter: blur(4px);
+      border-radius: 9999px;
+      padding: 0.625rem 1rem;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    @media (min-width: 768px) {
+      .trending-badge {
+        margin-top: 0;
+      }
+    }
+
+    .trending-badge-icon {
+      width: 1rem;
+      height: 1rem;
+      color: rgb(96, 165, 250);
+    }
+
+    .trending-badge-text {
+      font-size: 0.875rem;
+      color: rgb(147, 197, 253);
+    }
+
+    .trending-badge-text strong {
+      color: rgb(147, 197, 253);
+    }
+
+    .upcoming-matches-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    @media (min-width: 1024px) {
+      .upcoming-matches-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .upcoming-matches-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* Match card */
+    .match-item {
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .match-item-card {
+      /* Styles for the match card will be here */
+    }
+
+    .match-empty-message {
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
+      animation: fade-in 0.5s ease-out forwards;
+      animation-delay: 0.8s;
+      opacity: 0;
+    }
+
+    .match-empty-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.25rem;
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent);
+      backdrop-filter: blur(16px);
+      border-radius: 9999px;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .match-empty-icon {
+      width: 1rem;
+      height: 1rem;
+      color: rgb(96, 165, 250);
+    }
+
+    .match-empty-text {
+      font-size: 0.875rem;
+      color: rgb(147, 197, 253);
+    }
+
+    /* Footer */
+    .footer {
+      background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.8));
+      backdrop-filter: blur(4px);
+      padding-top: 5rem;
+      padding-bottom: 2.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    .footer-bg-pattern {
+      position: absolute;
+      inset: 0;
+      z-index: -10;
+      background-image: radial-gradient(rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    @media (min-width: 768px) {
+      .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    .footer-brand {
+      grid-column: span 1;
+    }
+
+    @media (min-width: 1024px) {
+      .footer-brand {
+        grid-column: span 1;
+      }
+    }
+
+    .footer-brand-content {
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      animation-delay: 0.1s;
+      opacity: 0;
+    }
+
+    .footer-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      text-decoration: none;
+    }
+
+    .footer-logo-icon {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 0.75rem;
+      background: linear-gradient(to bottom right, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 10px rgba(59, 130, 246, 0.3);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      transition: all 0.3s;
+    }
+
+    .footer-logo:hover .footer-logo-icon {
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3), 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .footer-logo-icon svg {
+      color: white;
+      height: 1.25rem;
+      width: 1.25rem;
+      transition: transform 0.3s;
+    }
+
+    .footer-logo:hover .footer-logo-icon svg {
+      transform: scale(1.1);
+    }
+
+    .footer-logo-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .footer-logo-main {
+      font-weight: 700;
+      font-size: 1.125rem;
+      line-height: 1.25;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      background-image: linear-gradient(to right, rgb(147, 197, 253), rgb(219, 234, 254));
+    }
+
+    .footer-logo-sub {
+      font-size: 0.625rem;
+      margin-top: -0.25rem;
+      color: rgba(96, 165, 250, 0.8);
+      letter-spacing: 0.1em;
+    }
+
+    .footer-description {
+      color: rgb(107, 114, 128);
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      max-width: 20rem;
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .social-link {
+      width: 2.25rem;
+      height: 2.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: rgb(107, 114, 128);
+      transition: all 0.3s;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .social-link:hover {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: rgb(96, 165, 250);
+      border-color: rgba(59, 130, 246, 0.2);
+    }
+
+    .social-icon {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .footer-links {
+      animation: slide-in-bottom 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .footer-links:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .footer-links:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    .footer-links:nth-child(4) {
+      animation-delay: 0.4s;
+    }
+
+    .footer-heading {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .footer-link-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      space-y: 0.75rem;
+    }
+
+    .footer-link-list li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-link {
+      color: rgb(107, 114, 128);
+      transition: color 0.2s;
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .footer-link:hover {
+      color: rgb(96, 165, 250);
+    }
+
+    .footer-link-dot {
+      height: 0.25rem;
+      width: 0.25rem;
+      border-radius: 9999px;
+      background-color: rgb(75, 85, 99);
+      transition: background-color 0.2s;
+    }
+
+    .footer-link:hover .footer-link-dot {
+      background-color: rgb(59, 130, 246);
+    }
+
+    .footer-newsletter {
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-newsletter-text {
+      color: rgb(107, 114, 128);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .newsletter-form {
+      display: flex;
+      margin-bottom: 1.5rem;
+    }
+
+    .newsletter-input {
+      flex: 1;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 0.5rem 0 0 0.5rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.875rem;
+      color: white;
+    }
+
+    .newsletter-input::placeholder {
+      color: rgb(107, 114, 128);
+    }
+
+    .newsletter-input:focus {
+      outline: none;
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+    }
+
+    .newsletter-button {
+      background: linear-gradient(to right, rgb(59, 130, 246), rgb(37, 99, 235));
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      transition: all 0.3s;
+    }
+
+    .newsletter-button:hover {
+      background: linear-gradient(to right, rgb(37, 99, 235), rgb(29, 78, 216));
+    }
+
+    .newsletter-button-icon {
+      width: 0.875rem;
+      height: 0.875rem;
+    }
+
+    .footer-bottom {
+      margin-top: 3.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(75, 85, 99, 0.5);
+    }
+
+    .footer-bottom-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .footer-bottom-content {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .footer-copyright {
+      color: rgb(107, 114, 128);
+      font-size: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      .footer-copyright {
+        margin-bottom: 0;
+      }
+    }
+
+    .footer-love {
+      color: rgb(107, 114, 128);
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .heart-icon {
+      color: rgb(239, 68, 68);
+      width: 0.75rem;
+      height: 0.75rem;
+      margin: 0 0.25rem;
+    }
+  </style>
+</head>
+<body>
+  <header class="header" id="header">
+    <div class="container header-content">
+      <!-- Logo -->
+      <a href="/" class="logo">
+        <div class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trophy">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+            <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">WINMIX</span>
+          <span class="logo-sub">TIPSTER</span>
+        </div>
+      </a>
+
+      <!-- Navigation for desktop -->
+      <nav class="nav">
+        <a href="/matches" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          <span class="nav-link-text">Mérkőzések</span>
+        </a>
+        <a href="/analysis" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+            <path d="M8 7V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v4"></path>
+            <path d="M12 12v6"></path>
+            <path d="M8 12v6"></path>
+            <path d="M16 12v6"></path>
+          </svg>
+          <span class="nav-link-text">V-Sports Elemzés</span>
+        </a>
+        <a href="/league" class="nav-link">
+          <svg class="nav-link-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+            <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+          </svg>
+          <span class="nav-link-text">Bajnokság</span>
+        </a>
+      </nav>
+
+      <!-- Auth buttons for desktop -->
+      <div class="auth-buttons">
+        <a href="/login" class="login-link">
+          Bejelentkezés
+        </a>
+        <a href="/signup" class="signup-link">
+          <span class="signup-link-text">Regisztráció</span>
+          <svg class="signup-link-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m9 18 6-6-6-6"></path>
+          </svg>
+          <div class="signup-link-bg"></div>
+        </a>
+      </div>
+
+      <!-- Mobile menu toggle -->
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle mobile menu">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" x2="20" y1="12" y2="12"></line>
+          <line x1="4" x2="20" y1="6" y2="6"></line>
+          <line x1="4" x2="20" y1="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <div class="mobile-menu-content">
+      <nav class="mobile-nav">
+        <a href="/matches" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          Mérkőzések
+        </a>
+        <a href="/analysis" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"></path>
+            <path d="M8 7V3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v4"></path>
+            <path d="M12 12v6"></path>
+            <path d="M8 12v6"></path>
+            <path d="M16 12v6"></path>
+          </svg>
+          V-Sports Elemzés
+        </a>
+        <a href="/league" class="mobile-nav-link">
+          <svg class="mobile-nav-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+            <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+            <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+          </svg>
+          Bajnokság
+        </a>
+      </nav>
+
+      <div class="mobile-auth">
+        <a href="/login" class="mobile-login">
+          Bejelentkezés
+        </a>
+        <a href="/signup" class="mobile-signup">
+          Regisztráció
+        </a>
+      </div>
+
+      <div class="mobile-footer">
+        <div class="mobile-footer-text">
+          © 2025 WinMix Tipster. Minden jog fenntartva.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <!-- Hero section -->
+    <section class="hero">
+      <!-- Background effects -->
+      <div class="hero-background">
+        <div class="hero-gradient"></div>
+        <div class="hero-radial"></div>
+        <div class="hero-dots"></div>
+        <div class="hero-particles">
+          <!-- Particles will be added with JavaScript -->
+        </div>
+        <div class="hero-orb-1"></div>
+        <div class="hero-orb-2"></div>
+      </div>
+
+      <div class="container hero-content">
+        <div class="hero-grid">
+          <!-- Hero text content -->
+          <div class="hero-text">
+            <div class="hero-badge">
+              <span class="badge-dot">
+                <span class="badge-dot-ping"></span>
+                <span class="badge-dot-core"></span>
+              </span>
+              <p class="badge-text">Tippelj mérkőzésekre és nyerj jutalmakat</p>
+            </div>
+            
+            <h1 class="hero-title">
+              <span class="hero-title-line hero-title-line-1">Emeld új szintre </span>
+              <span class="hero-title-line hero-title-line-2">mérkőzés tippjeidet</span>
+            </h1>
+            
+            <p class="hero-description">
+              Csatlakozz ezrekhez, akik tippelési tudásukat tesztelik és versenyeznek, hogy a ranglista élére kerüljenek.
+            </p>
+            
+            <div class="hero-cta">
+              <a href="/signup" class="cta-primary">
+                <span class="cta-primary-text">Kezdj el tippelni most</span>
+                <svg class="cta-primary-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+                <div class="cta-primary-shine"></div>
+              </a>
+              
+              <a href="/how-it-works" class="cta-secondary">
+                <span>Hogyan működik</span>
+                <svg class="cta-secondary-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <path d="M15 3h6v6"></path>
+                  <path d="m10 14 11-11"></path>
+                </svg>
+              </a>
+            </div>
+            
+            <!-- Stats with Neomorphic Cards -->
+            <div class="hero-stats">
+              <!-- Users Stat -->
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-container">
+                    <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="9" cy="7" r="4"></circle>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                  </div>
+                  <span class="stat-title">Felhasználók</span>
+                </div>
+                <span class="stat-value">10K+</span>
+                <span class="stat-label">Aktív tippelő</span>
+              </div>
+              
+              <!-- Accuracy Stat -->
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-container">
+                    <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                      <path d="M4 22h16"></path>
+                      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                      <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+                    </svg>
+                  </div>
+                  <span class="stat-title">Pontosság</span>
+                </div>
+                <span class="stat-value">87%</span>
+                <span class="stat-label">Legjobb tippelő</span>
+              </div>
+              
+              <!-- Matches Stat -->
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon-container">
+                    <svg class="stat-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m13 3 3.293 3.293-7 7 1.414 1.414 7-7L21 11"></path>
+                      <path d="m5 13 6 6"></path>
+                      <path d="M14.5 12.5c-1-2-2-2.5-4-2.5h-2c-1.38 0-2.632.56-3.536 1.464L3.5 12.928"></path>
+                    </svg>
+                  </div>
+                  <span class="stat-title">Mérkőzések</span>
+                </div>
+                <span class="stat-value">5K+</span>
+                <span class="stat-label">Tipp naponta</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Hero match card -->
+          <div class="hero-card-container">
+            <div class="hero-card">
+              <!-- Glowing orb backdrop -->
+              <div class="hero-card-backdrop"></div>
+              
+              <!-- Decorative rings -->
+              <div class="hero-card-ring-1"></div>
+              <div class="hero-card-ring-2"></div>
+              
+              <!-- Content container -->
+              <div class="hero-card-content">
+                <div class="match-card">
+                  <div class="match-card-inner">
+                    <div class="match-card-header">
+                      <div class="match-live-badge">
+                        <span class="match-live-text">Élő mérkőzés</span>
+                      </div>
+                      <div class="match-time">21:00</div>
+                    </div>
+                    
+                    <div class="match-teams">
+                      <div class="match-team">
+                        <div class="team-logo-container">
+                          <img 
+                            src="https://media.api-sports.io/football/teams/42.png" 
+                            alt="Arsenal" 
+                            class="team-logo"
+                          />
+                        </div>
+                        <span class="team-name">Arsenal</span>
+                        <span class="team-location">Otthon</span>
+                      </div>
+                      
+                      <div class="match-vs">
+                        <div class="vs-text">VS</div>
+                        <div class="vs-live">Élő</div>
+                      </div>
+                      
+                      <div class="match-team">
+                        <div class="team-logo-container">
+                          <img 
+                            src="https://media.api-sports.io/football/teams/49.png" 
+                            alt="Chelsea" 
+                            class="team-logo"
+                          />
+                        </div>
+                        <span class="team-name">Chelsea</span>
+                        <span class="team-location">Vendég</span>
+                      </div>
+                    </div>
+                    
+                    <div class="match-stats">
+                      <div class="stats-header">Tipp esélyek</div>
+                      <div class="stats-bar">
+                        <div class="stats-bar-track">
+                          <div class="stats-bar-fill" style="width: 42%"></div>
+                        </div>
+                        <span class="stats-bar-value">42%</span>
+                      </div>
+                      <div class="stats-bar" style="margin-top: 0.375rem">
+                        <div class="stats-bar-track">
+                          <div class="stats-bar-fill-draw" style="width: 28%"></div>
+                        </div>
+                        <span class="stats-bar-value" style="color: rgb(156, 163, 175)">28%</span>
+                      </div>
+                      <div class="stats-bar" style="margin-top: 0.375rem">
+                        <div class="stats-bar-track">
+                          <div class="stats-bar-fill" style="width: 30%"></div>
+                        </div>
+                        <span class="stats-bar-value">30%</span>
+                      </div>
+                    </div>
+                    
+                    <div class="match-buttons">
+                      <button class="match-button">
+                        Hazai
+                      </button>
+                      <button class="match-button">
+                        Döntetlen
+                      </button>
+                      <button class="match-button">
+                        Vendég
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Floating decorative elements -->
+              <div class="hero-decorative-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                  <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                  <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+                </svg>
+              </div>
+              <div class="hero-decorative-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                  <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                  <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Value proposition section -->
+    <section class="value-prop">
+      <!-- Background effects -->
+      <div class="value-prop-bg-pattern"></div>
+      <div class="value-prop-bg-gradient"></div>
+      <div class="value-prop-orb-1"></div>
+      <div class="value-prop-orb-2"></div>
+      
+      <div class="container value-prop-content">
+        <div class="value-prop-header">
+          <h2 class="value-prop-title">
+            Miért válaszd a WinMix Tipster platformot?
+          </h2>
+          <p class="value-prop-description">
+            Platformunk mindent biztosít, amire szükséged van a mérkőzés-előrejelzési élmény fokozásához
+            és a versenyhez más sportrajongókkal.
+          </p>
+        </div>
+        
+        <div class="features-grid">
+          <!-- Feature 1 -->
+          <div class="feature-card" style="animation-delay: 0.1s">
+            <div class="feature-glow"></div>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Kövesd sikereidet</h3>
+            <p class="feature-description">Tartsd nyilván minden előrejelzésedet és nézd meg a részletes statisztikákat a teljesítményedről.</p>
+            <div class="feature-indicator">
+              <svg class="feature-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Feature 2 -->
+          <div class="feature-card" style="animation-delay: 0.2s">
+            <div class="feature-glow"></div>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m13 3 3.293 3.293-7 7 1.414 1.414 7-7L21 11"></path>
+                <path d="m5 13 6 6"></path>
+                <path d="M14.5 12.5c-1-2-2-2.5-4-2.5h-2c-1.38 0-2.632.56-3.536 1.464L3.5 12.928"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Valós idejű frissítések</h3>
+            <p class="feature-description">Kapj élő mérkőzés-frissítéseket, azonnali eredményeket, és lásd, hogyan teljesítenek előrejelzéseid valós időben.</p>
+            <div class="feature-indicator">
+              <svg class="feature-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Feature 3 -->
+          <div class="feature-card" style="animation-delay: 0.3s">
+            <div class="feature-glow"></div>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Versenyezz barátaiddal</h3>
+            <p class="feature-description">Hozz létre privát ligákat, hívd meg barátaidat, és versenyezz, hogy kinek van a legjobb előrejelzési képessége.</p>
+            <div class="feature-indicator">
+              <svg class="feature-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Feature 4 -->
+          <div class="feature-card" style="animation-delay: 0.4s">
+            <div class="feature-glow"></div>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Okos elemzések</h3>
+            <p class="feature-description">Férj hozzá a csapatstatisztikákhoz, formavezetőkhöz és az egymás elleni eredményekhez a jobb előrejelzésekért.</p>
+            <div class="feature-indicator">
+              <svg class="feature-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Feature 5 -->
+          <div class="feature-card" style="animation-delay: 0.5s">
+            <div class="feature-glow"></div>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Szerezz jutalmakat</h3>
+            <p class="feature-description">Mászd meg a ranglistákat és gyűjts pontokat, amelyeket exkluzív jutalmakra és díjakra válthatsz be.</p>
+            <div class="feature-indicator">
+              <svg class="feature-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+          </div>
+          
+          <!-- Feature 6 -->
+          <div class="feature-card" style="animation-delay: 0.6s">
+            <div class="feature-glow"></div>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2"></rect>
+                <path d="M7 15h0"></path>
+                <path d="M15 7h0"></path>
+                <path d="m7 7 10 10"></path>
+              </svg>
+            </div>
+            <h3 class="feature-title">Biztonságos platform</h3>
+            <p class="feature-description">Adataidat ipari szabványú biztonsági intézkedésekkel és teljes átláthatósággal védjük.</p>
+            <div class="feature-indicator">
+              <svg class="feature-indicator-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <path d="m9 11 3 3L22 4"></path>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Upcoming matches section -->
+    <section class="upcoming-matches">
+      <!-- Background effects -->
+      <div class="upcoming-matches-bg">
+        <div class="upcoming-matches-gradient"></div>
+        <div class="upcoming-matches-radial"></div>
+      </div>
+      
+      <div class="container upcoming-matches-content">
+        <div class="upcoming-matches-header">
+          <div class="upcoming-matches-title-container">
+            <div class="upcoming-matches-badge">
+              <svg class="upcoming-matches-badge-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              <h2 class="upcoming-matches-badge-text">
+                Mai kiemelt mérkőzések
+              </h2>
+            </div>
+            <p class="upcoming-matches-subtitle">Válassz csapatokat és küldd el tippjeidet</p>
+          </div>
+          
+          <div class="trending-badge">
+            <svg class="trending-badge-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m13 3 3.293 3.293-7 7 1.414 1.414 7-7L21 11"></path>
+              <path d="m5 13 6 6"></path>
+              <path d="M14.5 12.5c-1-2-2-2.5-4-2.5h-2c-1.38 0-2.632.56-3.536 1.464L3.5 12.928"></path>
+            </svg>
+            <span class="trending-badge-text">
+              <strong>2 547</strong> tipp ma
+            </span>
+          </div>
+        </div>
+        
+        <div class="upcoming-matches-grid">
+          <!-- Since we don't have actual match cards, we'll just show the empty state -->
+        </div>
+        
+        <!-- Empty state / info message -->
+        <div class="match-empty-message">
+          <div class="match-empty-badge">
+            <svg class="match-empty-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" x2="12" y1="8" y2="12"></line>
+              <line x1="12" x2="12.01" y1="16" y2="16"></line>
+            </svg>
+            <span class="match-empty-text">További mérkőzések délután kerülnek közzétételre</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-bg-pattern"></div>
+    
+    <div class="container">
+      <div class="footer-grid">
+        <!-- Brand Section -->
+        <div class="footer-brand">
+          <div class="footer-brand-content">
+            <a href="/" class="footer-logo">
+              <div class="footer-logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                  <path d="M4 22h16"></path>
+                  <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                  <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                  <path d="M9 2v7a3 3 0 0 0 6 0V2"></path>
+                </svg>
+              </div>
+              <div class="footer-logo-text">
+                <span class="footer-logo-main">WINMIX</span>
+                <span class="footer-logo-sub">TIPSTER</span>
+              </div>
+            </a>
+            <p class="footer-description">
+              Készíts előrejelzéseket a közelgő mérkőzésekről és versenyezz barátaiddal, hogy kiderüljön, ki a legjobb.
+            </p>
+            <div class="footer-social">
+              <a href="#" class="social-link">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+                </svg>
+              </a>
+              <a href="#" class="social-link">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                </svg>
+              </a>
+              <a href="#" class="social-link">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+              </a>
+              <a href="#" class="social-link">
+                <svg class="social-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="footer-links">
+          <h3 class="footer-heading">Gyors linkek</h3>
+          <ul class="footer-link-list">
+            <li>
+              <a href="/" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Kezdőlap
+              </a>
+            </li>
+            <li>
+              <a href="/upcoming" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Közelgő mérkőzések
+              </a>
+            </li>
+            <li>
+              <a href="/leaderboard" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Ranglista
+              </a>
+            </li>
+            <li>
+              <a href="/live" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Élő mérkőzések
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Resources -->
+        <div class="footer-links">
+          <h3 class="footer-heading">Források</h3>
+          <ul class="footer-link-list">
+            <li>
+              <a href="/support" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Támogatás
+              </a>
+            </li>
+            <li>
+              <a href="/faq" class="footer-link">
+                <span class="footer-link-dot"></span>
+                GYIK
+              </a>
+            </li>
+            <li>
+              <a href="/rules" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Játékszabályok
+              </a>
+            </li>
+            <li>
+              <a href="/contact" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Kapcsolat
+              </a>
+            </li>
+          </ul>
+        </div>
+        
+        <!-- Newsletter & Legal -->
+        <div class="footer-links">
+          <h3 class="footer-heading">Iratkozz fel</h3>
+          <div class="footer-newsletter">
+            <p class="footer-newsletter-text">Kapd meg a legújabb tippeket és frissítéseket</p>
+            <div class="newsletter-form">
+              <input 
+                type="email"
+                placeholder="Email címed"
+                class="newsletter-input"
+              />
+              <button class="newsletter-button">
+                <span>Küldés</span>
+                <svg class="newsletter-button-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <path d="M15 3h6v6"></path>
+                  <path d="m10 14 11-11"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <h3 class="footer-heading">Jogi</h3>
+          <ul class="footer-link-list">
+            <li>
+              <a href="/terms" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Felhasználói feltételek
+              </a>
+            </li>
+            <li>
+              <a href="/privacy" class="footer-link">
+                <span class="footer-link-dot"></span>
+                Adatvédelmi irányelvek
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <div class="footer-bottom-content">
+          <p class="footer-copyright">
+            © 2025 WinMix Tipster. Minden jog fenntartva.
+          </p>
+          <p class="footer-love">
+            Készült <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+            </svg> sportrajongók számára
+          </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // JavaScript for header scroll effect
+    window.addEventListener('scroll', function() {
+      const header = document.getElementById('header');
+      if (window.scrollY > 10) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+    
+    // Mobile menu toggle
+    document.getElementById('mobile-menu-toggle').addEventListener('click', function() {
+      const mobileMenu = document.getElementById('mobile-menu');
+      mobileMenu.classList.toggle('open');
+      
+      // Also toggle the icon between menu and X
+      const toggleIcon = this.querySelector('svg');
+      if (mobileMenu.classList.contains('open')) {
+        toggleIcon.innerHTML = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+      } else {
+        toggleIcon.innerHTML = '<line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line>';
+      }
+    });
+    
+    // Add floating particles to hero section
+    function createParticles() {
+      const particlesContainer = document.querySelector('.hero-particles');
+      const particleCount = 20;
+      
+      if (particlesContainer) {
+        for (let i = 0; i < particleCount; i++) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          
+          // Random positioning
+          particle.style.top = `${Math.random() * 100}%`;
+          particle.style.left = `${Math.random() * 100}%`;
+          
+          // Random animation duration and delay
+          particle.style.animationDuration = `${3 + Math.random() * 5}s`;
+          particle.style.animationDelay = `${Math.random() * 2}s`;
+          
+          particlesContainer.appendChild(particle);
+        }
+      }
+    }
+    
+    // Run the particle creation function when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      createParticles();
+      
+      // Add animation delays to features
+      const features = document.querySelectorAll('.feature-card');
+      features.forEach((feature, index) => {
+        feature.style.animationDelay = `${0.1 + index * 0.1}s`;
+      });
+      
+      // Add animation delays to match items
+      const matchItems = document.querySelectorAll('.match-item');
+      matchItems.forEach((item, index) => {
+        item.style.animationDelay = `${0.2 + index * 0.1}s`;
+      });
+    });
+  </script>
+</body>
+</html>
