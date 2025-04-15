@@ -3,10 +3,10 @@ import { Team as PremierLeagueTeam } from '../data/premier-league-teams';
 import { Team as MatchTeam } from './match';
 
 export type UnifiedTeam = {
-  id: number; // Changed from string | number to just number to match Team type
+  id: number;
   name: string;
-  logo: string;        // Required property from match.ts
-  logoUrl?: string;     // from premier-league-teams.ts
+  logo: string;
+  logoUrl?: string;
   position?: number;
   form?: string;
   league?: string;
@@ -22,11 +22,11 @@ export type UnifiedTeam = {
 
 export const normalizeTeam = (team: PremierLeagueTeam | MatchTeam): UnifiedTeam => {
   if ('logoUrl' in team) {
-    // It's a PremierLeagueTeam with string id, convert to number
+    // It's a PremierLeagueTeam
     return {
       ...team,
-      id: typeof team.id === 'string' ? parseInt(team.id, 10) || 0 : team.id, // Convert string id to number
-      logo: team.logoUrl // Ensure logo is set from logoUrl
+      id: parseInt(team.id, 10) || 0,
+      logo: team.logoUrl
     };
   } else {
     // It's a MatchTeam

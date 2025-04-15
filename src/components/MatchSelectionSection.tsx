@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from 'react';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -66,18 +65,9 @@ const MatchSelectionSection = () => {
   
   // Update team selection
   const handleTeamSelect = (matchIndex: number, side: 'home' | 'away', teamId: string) => {
-    const team = PREMIER_LEAGUE_TEAMS.find(t => t.id === teamId) || null;
-    
+    const team = PREMIER_LEAGUE_TEAMS.find(t => t.id === teamId);
     setSelectedTeams(prev => {
       const updated = [...prev];
-      // If this team was previously selected somewhere else, remove it
-      updated.forEach((match, idx) => {
-        if (idx !== matchIndex) {
-          if (match.home?.id.toString() === teamId) updated[idx].home = null;
-          if (match.away?.id.toString() === teamId) updated[idx].away = null;
-        }
-      });
-      
       updated[matchIndex] = {
         ...updated[matchIndex],
         [side]: team ? normalizeTeam(team) : null
@@ -134,7 +124,7 @@ const MatchSelectionSection = () => {
               availableTeams={[
                 ...(match.home ? [match.home] : []),
                 ...(match.away ? [match.away] : []),
-                ...availableTeams
+                ...PREMIER_LEAGUE_TEAMS.map(team => normalizeTeam(team))
               ]}
               onTeamSelect={handleTeamSelect}
             />
