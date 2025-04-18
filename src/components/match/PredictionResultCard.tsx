@@ -26,7 +26,7 @@ const PredictionResultCard: React.FC<PredictionResultCardProps> = ({ match }) =>
         <div className="h-full w-full p-8 flex flex-col">
           <PredictionHeader isLive={isLive} matchTime={match.time || "21:00"} />
           <TeamsDisplay homeTeam={match.home} awayTeam={match.away} />
-          <PredictionStats match={{ home: match.home, away: match.away }} />
+          <PredictionStats match={match} />
           <PredictionButtons />
         </div>
       </div>
