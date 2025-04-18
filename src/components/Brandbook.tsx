@@ -267,7 +267,7 @@ const Brandbook = () => {
                     <img 
                       src="/logo/winmix-logo-large.svg" 
                       alt="Winmix Logo" 
-                      className="w-full max-w-[300px] mx-auto mb-4"
+                      className="w-full max-w-[300px] mx-auto mb-4 bg-gray-900 p-4 rounded-lg"
                     />
                   </div>
                   <div className="flex flex-col gap-3">
@@ -294,7 +294,7 @@ const Brandbook = () => {
               <Card className="bg-black/20 border-white/10">
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold mb-4">Hero Background</h3>
-                  <div className="mb-6 relative h-[200px] rounded-lg overflow-hidden">
+                  <div className="mb-6 relative h-[200px] rounded-lg overflow-hidden bg-gray-900">
                     <div className="absolute inset-0">
                       <HeroBackground />
                     </div>
