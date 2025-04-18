@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { UnifiedTeam, normalizeTeam } from '../../types/unified-team';
+import { UnifiedTeam } from '../../types/unified-team';
 import PredictionHeader from './PredictionHeader';
 import TeamsDisplay from './prediction-card/TeamsDisplay';
 import PredictionStats from './prediction-card/PredictionStats';

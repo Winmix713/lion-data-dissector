@@ -2,6 +2,7 @@
 import React from 'react';
 import { Team } from '../../data/premier-league-teams';
 import PredictionResultCard from '../match/PredictionResultCard';
+import { normalizeTeam } from '../../types/unified-team';
 
 interface PredictionResultsSectionProps {
   selectedTeams: { home: Team | null; away: Team | null }[];
@@ -16,7 +17,13 @@ const PredictionResultsSection: React.FC<PredictionResultsSectionProps> = ({ sel
         {selectedTeams
           .slice(0, 4)
           .map((match, index) => (
-            <PredictionResultCard key={index} match={match} />
+            <PredictionResultCard 
+              key={index} 
+              match={{
+                home: match.home ? normalizeTeam(match.home) : null,
+                away: match.away ? normalizeTeam(match.away) : null
+              }} 
+            />
           ))}
       </div>
       
@@ -25,7 +32,13 @@ const PredictionResultsSection: React.FC<PredictionResultsSectionProps> = ({ sel
           {selectedTeams
             .slice(4)
             .map((match, index) => (
-              <PredictionResultCard key={index + 4} match={match} />
+              <PredictionResultCard 
+                key={index + 4} 
+                match={{
+                  home: match.home ? normalizeTeam(match.home) : null,
+                  away: match.away ? normalizeTeam(match.away) : null
+                }} 
+              />
             ))}
         </div>
       )}

@@ -3,7 +3,7 @@ import { Team as PremierLeagueTeam } from '../data/premier-league-teams';
 import { Team as MatchTeam } from './match';
 
 export type UnifiedTeam = {
-  id: number;
+  id: string | number;
   name: string;
   logo: string;
   logoUrl?: string;
@@ -24,15 +24,22 @@ export const normalizeTeam = (team: PremierLeagueTeam | MatchTeam): UnifiedTeam 
   if ('logoUrl' in team) {
     // It's a PremierLeagueTeam
     return {
-      ...team,
-      id: parseInt(team.id, 10) || 0,
-      logo: team.logoUrl
+      id: team.id,
+      name: team.name,
+      logo: team.logoUrl,
+      logoUrl: team.logoUrl,
+      league: team.league
     };
   } else {
     // It's a MatchTeam
     return {
-      ...team,
-      logoUrl: team.logo
+      id: team.id,
+      name: team.name,
+      logo: team.logo,
+      logoUrl: team.logo,
+      form: team.form,
+      position: team.position,
+      stats: team.stats
     };
   }
 };
