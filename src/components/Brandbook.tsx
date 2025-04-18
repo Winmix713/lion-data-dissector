@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
+import HeroBackground from './Hero/HeroBackground';
 
 const Brandbook = () => {
   const [selectedTab, setSelectedTab] = useState("colors");
